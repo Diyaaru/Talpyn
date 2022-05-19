@@ -1,2 +1,44 @@
 {% extends 'store/home.html' %}
-{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<br>
+<br>
+  <div class="box-element" style="display: flex; ">
+    <div class="media" style="padding: 30px;">
+      <img class="rounded-circle account-img" src="{{ user.profile.image.url }}" style="max-height: 200px;">
+      <div class="media-body">
+        <h2 class="account-heading">{{ user.username }}</h2>
+        <p class="text-secondary">{{ user.email }}</p>
+      </div>
+    </div>
+
+
+    <div>
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+      <fieldset class="form-group">
+        <legend class="border-bottom mb-4">Profile Info</legend>
+         {{ u_form|crispy }}
+         {{ p_form|crispy }}
+      </fieldset>
+      <div class="form-group" id="signup-button">
+        <button type="button" class="btn btn-light" style="background-color: #244d4d; color: white; border-radius: 5px;">Update</button>
+      </div>
+      </form>
+    </div>
+
+  </div>
+  <br>
+  <br>
+  <style type="text/css">
+  .box-element{
+      box-shadow: 0 0 0px;
+   background-color: #f6fbf6;
+   border-radius: 5px;
+   padding: 10px;
+      border: solid #244d4d 3px;
+  }
+</style>
+
+{% endblock content %}

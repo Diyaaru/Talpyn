@@ -2,61 +2,96 @@
 {% load static %}
 <body>
 	{% block content %}
-<div class="row">
- <div class="col-lg-12">
-   <div class="box-element">
-      <a  class="btn btn-outline-dark" href="{% url 'store' %}"> &#x2190; Continue Shopping </a>
-      <br>
-      <br>
-      <table class="table">
-		<tr>
-			<th><h5>Items:<strong>{{order.get_cart_items}}</strong></h5></th>
-			<th><h5>Total:<strong> ${{order.get_cart_total}}</strong></h5></th>
-			<th>
-				<a style="float:right; margin:5px;" class="btn btn-success" href="{% url 'checkout' %}">Checkout</a>
-			</th>
-		</tr>
-	</table>
-     </div>
+		 <a class="btn btn-block btn-light"  style="color: #244d4d; font-weight: bold; font-size: 17px;  border-radius: 5px" href="{% url 'home' %}"> &#x2190; Continue Shopping </a>
 
-     <br>
+	<div class="row">
+		<div class="col-lg-8">
+			<div class="box-element">
+				{% for item in items %}
+				<div class="cart-row">
+					<div style="flex:1"><img class="row-image" src="{{item.product.imageURL}}"></div>
+					<div style="flex:1"><p>{{item.product.name}}</p></div>
+					<div style="flex:1"><p>${{item.product.price|floatformat:2}}</p></div>
+					<div style="flex:1" class="quantityi">
+						    <a data-product={{item.product.id}} data-action="remove" class="chg-quantity update-cart">-</a>
+						    <a class="quantity">{{item.quantity}}</a>
+							<a data-product={{item.product.id}} data-action="add" class="chg-quantity update-cart">+</a>
+					</div>
+					<div class="total" style="flex:1"><p>TOTAL: ${{item.get_total}}</p></div>
+				</div>
+				{% endfor %}
+			</div>
+	    </div>
 
-     <div class="box-element">
-       <div class="cart-row">
-       		<div style="flex:2"></div>
-       		<div style="flex:2"><strong>Item</strong></div>
-       		<div style="flex:1"><strong>Price</strong></div>
-       		<div style="flex:1"><strong>Quantity</strong></div>
-       		<div style="flex:1"><strong>Total</strong></div>
-       	</div>
-
-      {% for item in items %}
-       	<div class="cart-row">
-       		<div style="flex:2"><img class="row-image" src="{{item.product.imageURL}}"></div>
-       		<div style="flex:2"><p>{{item.product.name}}</p></div>
-       		<div style="flex:1"><p>${{item.product.price|floatformat:2}}</p></div>
-       		<div style="flex:1">
-       			<p class="quantity">{{item.quantity}}</p>
-       			<div class="quantity">
-       				<img data-product={{item.product.id}} data-action="add" class="chg-quantity update-cart" src="{% static  'images/arrow-up.png' %}">
-
-       				<img data-product={{item.product.id}} data-action="remove" class="chg-quantity update-cart" src="{% static  'images/arrow-down.png' %}">
-       			</div>
-       		</div>
-       		<div style="flex:1"><p>${{item.get_total}}</p></div>
-     </div>
-
-       {% endfor %}
-   </div>
+	<div class="col-lg-4">
+		<table class="table">
+                    <h4>ORDER SUMMARY</h4>
+					<tr><h5>Total:<strong> ${{order.get_cart_total}}</strong></h5></tr>
+			        <tr><h5>Shipping cost:<strong>Free</strong></h5></tr>
+					<tr>
+						<a style="float:right; margin:5px; color: white; border-radius: 5px" class="btn btn-block bg-dark" href="{% url 'checkout' %}">Checkout</a>
+					</tr>
+			</table>
+	   </div>
+	<style type="text/css">
+		.box-element{
+		    box-shadow: 0 0 0px;
+			border-radius: 5px;
+			padding: 10px;
+		}
+		.row-image{
+	    width: 150px;
+        }
+        .row{
+        margin-top: 40px;
+        }
+        .cart-row{
+		display: flex;
+		padding-top: 15px;
+		font-size:20px;
+		margin-bottom: 10px;
+		margin-left: 15px;
+		border-radius: 20px;
+        border: solid 1px #e0e0e0;
+        background-color: #f6fbf6;
+        }
+        .quantityi{
+        border: solid 1px #244d4d;
+        height: 40px;
+        width: 70px;
+        font-size:25px;
+        margin-top: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        right: 53%;
+        }
+        .chg-quantity{
+	    width: 12px;
+	    cursor: pointer;
+	    display: block;
+	    margin-top: -4px;
+	    transition:.1s;
+        }
+		.total{
+		position: absolute;
+        right: 20%;
+        margin-top: 60px;
+		}
+		.quantity{
+		font-size:25px;
+		}
+	</style>
+	<br>
+	<br>
+	<br>
+	<br>
 </div>
-
-<br>
-<br>
-<br>
-<br>
 
 
 {% endblock content %}	
 </body>
+
 
 

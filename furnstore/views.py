@@ -1,28 +1,67 @@
 from django.shortcuts import render
+from django.core.paginator import Paginator
+from django.core.paginator import Paginator
+from django.shortcuts import render
 from django.http import JsonResponse
-from .form import UserRegisterForm
+from django.urls import reverse_lazy, reverse
 from django.shortcuts import render, redirect
 import json
+from django.views import View
 import datetime
 from .models import *
-# Create your views here.
-
+from .utils import *
+from .forms import *
+from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.views import LoginView, PasswordChangeView
+from .forms import UserRegisterForm, UserUpdateForm, ProfileUpdateForm
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login
 def register(request):
 
     if request.method == "POST":
         form = UserRegisterForm(request.POST)
+        # username1 = request.POST['username']
+        # name1 = request.POST['username']
+        # email1 = request.POST['email']
+        # mod = Customer(user = username1, name = name1, email = email1)
+        # mod.save()
         if form.is_valid():
             form.save()
-            return redirect('store')
+            return redirect('home')
     else:
         form = UserRegisterForm()
 
-    return render(request, 'store/register.html', {'form': form})
+    return render(request, 'store/Register.html', {'form': form})
+
 
 def profile(request):
-    return render(request, 'store/profile.html')
+   Profile.objects.get_or_create(user=request.user)
+   if request.method == "POST":
+       u_form = UserUpdateForm(request.POST, instance=request.user)
+       p_form = ProfileUpdateForm(request.POST,
+                                  request.FILES,
+                                  instance=request.user.profile)
+       if u_form.is_valid() and p_form.is_valid():
+           u_form.save()
+           p_form.save()
+   else:
+        u_form = UserUpdateForm(instance=request.user)
+        p_form = ProfileUpdateForm(instance=request.user.profile)
 
-def store(request):
+   context = {
+        'u_form': u_form,
+        'p_form': p_form
+     }
+   return render(request, 'store/profile.html', context)
+
+def home(request):
+  products = Product.objects.all()
+  paginator = Paginator(products, 12)
+  page_number = request.GET.get('page')
+  page_obj = paginator.get_page(page_number)
+
   if request.user.is_authenticated:
       customer = request.user.customer
       order, created = Order.objects.get_or_create(customer=customer, complete=False)
@@ -33,8 +72,7 @@ def store(request):
       order ={'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
       cartItems = order['get_cart_items']
 
-  products = Product.objects.all()
-  context = {'products' :products, 'cartItems' :cartItems}
+  context = {'page_obj' : page_obj, 'cartItems' :cartItems}
   return render(request,'store/home.html', context)
 
 def cart(request):
@@ -115,3 +153,60 @@ def processOrder(request):
     else:
         print('User is not logged in...')
     return JsonResponse('Payment complete', safe=False)
+
+def signin(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username =username, password = password)
+
+        if user is not None:
+            login(request,user)
+            return redirect('home')
+        else:
+            form = AuthenticationForm()
+            return render(request,'registration/login.html',{'form':form})
+
+    else:
+        form = AuthenticationForm()
+        return render(request, 'registration/login.html', {'form':form})
+
+def signout(request):
+    logout(request)
+    return redirect('home')
+
+
+def about(request):
+    return render(request, 'store/about.html')
+
+def detail(request):
+    products = Product.objects.all()
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.get_cart_items
+    else:
+        items = []
+        order ={'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
+        cartItems = order['get_cart_items']
+
+    context = {'page_obj' : page_obj, 'cartItems' :cartItems}
+    return render(request,'store/detail.html', context)
+
+def search(request):
+    context = dict()
+    context['title'] = 'Search'
+
+    if request.method == 'POST':
+        context['products'] = Product.objects.filter(name__contains=request.POST['search'])
+
+    return render(request, 'store/search.html', context)
+
