@@ -1,0 +1,164 @@
+{% extends 'store/home.html' %}
+{% load static %}
+{% block content %}
+
+    <div class="content_1">
+        <form class ="search" method="post" >
+            {% csrf_token %}
+            <input id="search" type="search" name="search" placeholder="Sofa..." />
+            <label id="bt" type="submit">Search</label>
+        </form>
+
+        <div class="content_blocks" style="margin-top: 20px; height: 70%; display: flex; flex-wrap: wrap; justify-content: space-between">
+        {% if products %}
+            {% for prod in products %}
+            <div class="cardblock">
+                <div class="imageblock15"><img class="thumbnail" src="{{prod.imageURL}}" alt=""></div>
+                <div class="nameelement"><h3>{{ prod.name }}</h3></div>
+                <div class="coastel"><h5>{{ prod.price | floatformat }} KZT</h5></div>
+                <a class="button" href='cart' >Shop Now</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="cardblock">
+            </div>
+        {% endif %}
+        </div>
+    </div>
+<style type="text/css">
+.imageblock15{
+    width: 300px;
+    height: 220px;
+    background-size: 300px!important;
+    background-repeat: no-repeat!important;
+    background-attachment: fixed;
+    background-position: center!important;
+}
+
+.imageblock15:hover{
+    /*background: url("./123/jeideler/burjeide/b1.jpg") no-repeat ;*/
+    background-size: 300px;
+}
+.cardblock{
+box-shadow: -3px -3px 6px -3px #212529;
+}
+    form {
+    margin-left: 35%;
+    position: relative;
+    width: 30%;
+    border-radius: .7rem;
+    display: flex;
+  }
+  #bt {
+    height: 4rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 1.8rem;
+    text-align: center;
+    padding-top: 10px;
+    width: 6rem;
+    font-weight: bold;
+    background: #244d4d;;
+    border-radius: 0 .7rem .7rem 0;
+    color: white;
+    cursor: pointer;
+  }
+ #search{
+    border: 3px solid #244d4d!important;
+    height: 4rem;
+    font-family: 'Lato', sans-serif;
+    font-size: 1.8rem;
+  }
+  input[type="search"] {
+    background: #fff;
+    padding: 0 1.6rem;
+    border-radius: 1rem;
+    transition: .3s , cubic-bezier(0, 0, 0.43, 1.49);
+    transition-property: 100%, .7rem;
+    z-index: 1;
+    position: relative;
+    cursor: pointer;
+  }
+  #h1{
+      color: white;
+      font-size: 60px;
+      -webkit-text-stroke: 2px black;
+      margin-top: 30px;
+      text-align: center;
+      margin-left: 28%;
+      background-color: rgba(237, 244, 245, 0.45);
+      max-width: 700px;
+  }
+  input:not(:placeholder-shown) {
+    border-radius: .7rem 0 0 .7rem;
+    width: calc(100% - 6rem);
+  }
+  @media (max-width:1300px) {
+      #h1{
+          font-size: 30px;
+          margin-left: 20%;
+          max-width: 60%;
+      }
+      form{
+          width: 50%;
+      }
+      #search{
+          font-size: 20px;
+      }
+      #bt{
+          font-size: 20px;
+      }
+
+  }
+  @media (max-width:740px) {
+    .qazrep{
+        font-size:28px;
+    }
+    .qazrep p{
+        margin-top: 10px;
+    }
+    .logo{
+        height: 50px;
+    }
+    header{
+        height: 80px;
+    }
+}
+@media (max-width:630px) {
+    .logo{
+        height: 40px;
+    }
+    .qazrep p{
+        margin-top: 5px;
+    }
+    header{
+        height: 80px;
+    }
+}
+@media (max-width:605px) {
+    .qazrep{
+        display: none;
+    }
+    .logo{
+        height: 50px;
+    }
+    header{
+        height: 80px;
+
+}
+#search{
+    height: 60px;}
+    #bt{
+        height: 60px;
+        width: 40px;
+    }
+
+    input:not(:placeholder-shown) {
+        width: calc(100% - 40px);
+      }
+      form{
+          margin-left: 30px;
+          width: 60%;
+      }
+}
+</style>
+{% endblock content %}
